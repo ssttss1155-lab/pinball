@@ -6,19 +6,48 @@
 <title>PINBALL</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:#111;overflow:hidden;touch-action:none;font-family:monospace;}
-#wrap{display:flex;flex-direction:column;width:100vw;height:100vh;}
-#hud{display:flex;justify-content:space-between;align-items:center;
-     padding:5px 14px;background:#000;border-bottom:2px solid #333;flex-shrink:0;}
+html{height:100%;}
+body{
+  background:#000;
+  overflow:hidden;
+  touch-action:none;
+  font-family:monospace;
+  height:100%;
+  /* Safariのバーを除いた実際の高さを使う */
+  height: -webkit-fill-available;
+}
+#wrap{
+  display:flex;
+  flex-direction:column;
+  width:100vw;
+  /* 動的ビューポート：ブラウザバーを除いた高さ */
+  height:100dvh;
+  /* dvh非対応ブラウザ向けフォールバック */
+  height:calc(var(--vh, 1vh) * 100);
+}
+#hud{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:6px 14px;background:#000;border-bottom:2px solid #333;
+  flex-shrink:0;
+}
 #score{font-size:20px;font-weight:bold;color:#ff0;letter-spacing:3px;}
 #lives{font-size:18px;color:#0ff;letter-spacing:2px;}
-#cv{display:block;flex:1;}
-#btns{display:flex;flex-shrink:0;background:#000;border-top:2px solid #333;
-      padding-bottom:env(safe-area-inset-bottom, 16px);
-      padding-bottom:max(env(safe-area-inset-bottom), 16px);}
-.btn{flex:1;height:72px;color:#fff;font-family:monospace;font-size:13px;
-     font-weight:bold;letter-spacing:1px;border:none;cursor:pointer;
-     -webkit-tap-highlight-color:transparent;outline:none;}
+#cv{display:block;flex:1;min-height:0;}
+#btns{
+  display:flex;
+  flex-shrink:0;
+  background:#000;
+  border-top:2px solid #333;
+  /* iPhoneのホームバー分の余白 */
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+.btn{
+  flex:1;height:68px;color:#fff;
+  font-family:monospace;font-size:13px;
+  font-weight:bold;letter-spacing:1px;
+  border:none;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;outline:none;
+}
 #btnL{background:#1a3a7a;}
 #btnR{background:#1a3a7a;}
 #btnM{flex:.6;background:#5a0000;color:#faa;}
@@ -39,6 +68,15 @@ body{background:#111;overflow:hidden;touch-action:none;font-family:monospace;}
   </div>
 </div>
 <script>
+// ===== Mobile viewport fix =====
+function setVH(){
+  var vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', vh + 'px');
+}
+setVH();
+window.addEventListener('resize', setVH);
+window.addEventListener('orientationchange', function(){ setTimeout(setVH, 100); });
+
 // ===== Audio =====
 var AC=null;
 function getAC(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}return AC;}
